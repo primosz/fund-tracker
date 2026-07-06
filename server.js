@@ -111,3 +111,7 @@ app.get('/api/validate', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Stateless backend running at http://localhost:${PORT}`);
 });
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
