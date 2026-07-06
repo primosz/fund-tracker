@@ -1,11 +1,9 @@
 {
   "name": "fund-tracker",
   "version": "1.0.0",
-  "description": "Premium Investment Fund Tracker Dashboard",
-  "main": "server.js",
   "type": "module",
   "scripts": {
-    "start": "node server.js"
+    "dev": "node server.js"
   },
   "dependencies": {
     "express": "^4.19.2"
