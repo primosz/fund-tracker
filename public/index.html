@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FundTracker - Panel Notowań Funduszy Inwestycyjnych</title>
+    <!-- Google Fonts: Plus Jakarta Sans for a premium interface look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for beautiful icon representation -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- ApexCharts CDN for premium dynamic charts -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        
+        <!-- Sidebar or Header Row -->
+        <header class="dashboard-header">
+            <div class="brand-section">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+                <div class="brand-text">
+                    <h1>Fund<span>Tracker</span></h1>
+                    <p>Twój osobisty panel inwestycyjny</p>
+                </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="header-stats">
+                <div class="stat-box">
+                    <span class="stat-label">Śledzone fundusze</span>
+                    <span class="stat-value" id="stats-total-count">0</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">Średni wynik (1D)</span>
+                    <span class="stat-value" id="stats-avg-performance">0.00%</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">Ostatnia synchronizacja</span>
+                    <span class="stat-value" id="stats-last-sync">Nigdy</span>
+                </div>
+                <button class="btn-refresh" id="btn-refresh-all" title="Synchronizuj wszystkie fundusze">
+                    <i class="fa-solid fa-arrows-rotate"></i>
+                    <span>Odśwież</span>
+                </button>
+            </div>
+        </header>
+
+        <main class="dashboard-content">
+            <!-- Add Fund Panel -->
+            <section class="add-fund-section">
+                <div class="panel-card">
+                    <div class="panel-header">
+                        <h2><i class="fa-solid fa-plus-circle"></i> Dodaj fundusz do śledzenia</h2>
+                        <p>Wklej adres URL strony funduszu z portalu Analizy.pl lub podaj bezpośredni kod w formacie <code>typ/KOD</code>.</p>
+                    </div>
+                    <form id="add-fund-form" class="add-fund-form">
+                        <div class="input-group">
+                            <i class="fa-solid fa-link input-icon"></i>
+                            <input 
+                                type="text" 
+                                id="fund-url-input" 
+                                placeholder="Wklej link, np. https://www.analizy.pl/ubezpieczeniowe-fundusze-kapitalowe/UGEN4/generali-obligacji-ufk..."
+                                required
+                                autocomplete="off"
+                            >
+                        </div>
+                        <button type="submit" class="btn-submit" id="btn-add-fund">
+                            <i class="fa-solid fa-circle-plus"></i>
+                            <span>Dodaj do panelu</span>
+                        </button>
+                    </form>
+                    <div class="error-container" id="error-message" style="display: none;">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span class="error-text">Wystąpił błąd podczas dodawania funduszu.</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Loading overlay or state -->
+            <div class="loading-state" id="global-loading">
+                <div class="spinner"></div>
+                <p>Pobieranie notowań i rysowanie wykresów...</p>
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="empty-state" style="display: none;">
+                <div class="empty-icon">
+                    <i class="fa-solid fa-chart-area"></i>
+                </div>
+                <h3>Brak śledzonych funduszy</h3>
+                <p>Dodaj swój pierwszy fundusz korzystając z formularza powyżej.</p>
+            </div>
+
+            <!-- Funds Grid -->
+            <section class="funds-grid" id="funds-grid">
+                <!-- JavaScript will dynamically render fund cards here -->
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <p>Dane są pobierane i analizowane z serwisu <strong>Analizy.pl</strong>. Odświeżanie automatyczne co godzinę.</p>
+            <p>&copy; 2026 FundTracker. Wszelkie prawa zastrzeżone.</p>
+        </footer>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
