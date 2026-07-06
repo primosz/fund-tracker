@@ -275,12 +275,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const response = await fetch(`${API_URL}/validate?url=${encodeURIComponent(urlValue)}`);
-            const data = await response.json();
             
             if (!response.ok) {
-                throw new Error(data.error || 'Nie można zweryfikować funduszu.');
+                let errorMsg = 'Nie można zweryfikować funduszu.';
+                try {
+                    const data = await response.json();
+                    errorMsg = data.error || errorMsg;
+                } catch (e) {}
+                throw new Error(errorMsg);
             }
 
+            const data = await response.json();
             const { type, code } = data;
 
             // Check if already in the list
