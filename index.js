@@ -10,7 +10,7 @@ const app = express();
 app.use(express.json());
 
 // Serve static assets from public folder (for local running)
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Fetch quotation directly from Analizy.pl API
 async function fetchQuotation(type, code) {
