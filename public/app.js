@@ -403,7 +403,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Render individual ApexChart
-    function renderFundChart(fundId, prices, isPositive, period = '1Y') {
+    function renderFundChart(fundId, prices, isPositive, period = '1Y', currency = 'PLN') {
         if (!fundId) return;
         const containerId = `chart-${fundId.replace('/', '-')}`;
         const container = document.getElementById(containerId);
@@ -476,7 +476,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 x: { format: 'dd.MM.yyyy' },
                 y: {
                     formatter: function(val) {
-                        return val.toFixed(4) + ' PLN';
+                        return val.toFixed(2) + ' ' + currency;
                     }
                 },
                 style: {
@@ -564,7 +564,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 <div class="card-price-section">
                     <div class="price-main">
-                        <h3>${fund.currentValue.toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 4 })}<span>${fund.currency}</span></h3>
+                        <h3>${fund.currentValue.toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}<span>${fund.currency}</span></h3>
                         <p>Notowanie z dnia: ${fund.lastUpdate}</p>
                     </div>
                     <div class="change-badge ${changeClass}">
@@ -595,7 +595,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Render default chart (1Y) inside try-catch to isolate errors
             try {
-                renderFundChart(fund.id, fund.prices, isPositive, '1Y');
+                renderFundChart(fund.id, fund.prices, isPositive, '1Y', fund.currency);
             } catch (chartError) {
                 console.error(`Failed to render chart for ${fund.id}:`, chartError);
             }
@@ -608,7 +608,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     btn.classList.add('active');
 
                     const period = btn.getAttribute('data-period');
-                    renderFundChart(fund.id, fund.prices, isPositive, period);
+                    renderFundChart(fund.id, fund.prices, isPositive, period, fund.currency);
                 });
             });
         });
