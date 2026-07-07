@@ -606,3 +606,8 @@ body {
         gap: 0.5rem;
     }
 }
+
+/* Suppress floating tooltip to avoid covering the chart line (hover info shows in card header) */
+.apexcharts-tooltip {
+    display: none !important;
+}

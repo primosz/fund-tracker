@@ -549,7 +549,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             },
             tooltip: {
-                enabled: false // Disable the floating popup completely to avoid overlapping the line
+                enabled: true
             },
             grid: {
                 padding: { top: 10, right: 10, bottom: 5, left: 10 }
