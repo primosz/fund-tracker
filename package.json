@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "node server.js"
+    "dev": "node dev-server.js"
   },
   "dependencies": {
     "express": "^4.19.2"
