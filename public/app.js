@@ -427,19 +427,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const categories = filteredPrices.map(p => p.date);
         const dataValues = filteredPrices.map(p => p.value);
 
-        const themeColor = isPositive ? 'var(--green-accent)' : 'var(--red-accent)';
+        const themeColor = isPositive ? '#34c759' : '#ff3b30';
 
         if (typeof ApexCharts === 'undefined') {
-            container.innerHTML = '<div style="color: var(--red-accent); font-size: 0.8rem; text-align: center; padding-top: 4rem;">ApexCharts nie załadowany</div>';
+            container.innerHTML = '<div style="color: var(--apple-red); font-size: 0.8rem; text-align: center; padding-top: 4rem;">ApexCharts nie załadowany</div>';
             return;
         }
 
         const options = {
             chart: {
                 type: 'area',
-                height: 180,
+                height: 160,
                 sparkline: { enabled: true },
-                animations: { enabled: true, easing: 'easeinout', speed: 500 },
+                animations: { enabled: true, easing: 'easeinout', speed: 400 },
                 background: 'transparent'
             },
             stroke: {
@@ -451,13 +451,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 type: 'gradient',
                 gradient: {
                     shadeIntensity: 1,
-                    opacityFrom: 0.35,
-                    opacityTo: 0.02,
-                    stops: [0, 90, 100],
-                    colorStops: [
-                        { offset: 0, color: themeColor, opacity: 0.35 },
-                        { offset: 100, color: themeColor, opacity: 0.02 }
-                    ]
+                    opacityFrom: 0.12,
+                    opacityTo: 0.0,
+                    stops: [0, 100]
                 }
             },
             series: [{
@@ -476,12 +472,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             },
             tooltip: {
-                theme: 'dark',
+                theme: 'light',
                 x: { format: 'dd.MM.yyyy' },
                 y: {
                     formatter: function(val) {
                         return val.toFixed(4) + ' PLN';
                     }
+                },
+                style: {
+                    fontSize: '11px',
+                    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto'
                 },
                 marker: { show: false }
             },
