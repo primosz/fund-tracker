@@ -68,13 +68,12 @@ app.get('/api/validate', async (req, res) => {
     }
 
     if (!type && !code) {
-      const parsed = cleanUrl.startsWith('http') ? new URL(cleanUrl) : { pathname: cleanUrl };
+      const isHttp = cleanUrl.startsWith('http');
+      const parsed = isHttp ? new URL(cleanUrl) : { pathname: cleanUrl };
       const parts = parsed.pathname.split('/').filter(Boolean);
       
       if (parts.length >= 2) {
         const categorySlug = parts[0];
-        code = parts[1].toUpperCase();
-        
         const mappings = {
           'ubezpieczeniowe-fundusze-kapitalowe': 'ufk',
           'fundusze-inwestycyjne-otwarte': 'fio',
@@ -87,6 +86,30 @@ app.get('/api/validate', async (req, res) => {
         };
         
         type = mappings[categorySlug] || (categorySlug.length === 3 ? categorySlug : '');
+        
+        let scrapedCode = '';
+        if (isHttp) {
+          try {
+            console.log(`Scraping page to resolve internal ID: ${cleanUrl}`);
+            const pageRes = await fetch(cleanUrl, {
+              headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+              }
+            });
+            if (pageRes.ok) {
+              const html = await pageRes.text();
+              const match = html.match(/window\.fundID\s*=\s*["']([^"']+)["']/);
+              if (match && match[1]) {
+                scrapedCode = match[1].toUpperCase();
+                console.log(`Successfully scraped internal ID: ${scrapedCode}`);
+              }
+            }
+          } catch (scrapeErr) {
+            console.warn(`Scraping failed, falling back to URL code:`, scrapeErr.message);
+          }
+        }
+
+        code = scrapedCode || parts[1].toUpperCase();
       }
     }
   } catch (error) {
@@ -104,7 +127,7 @@ app.get('/api/validate', async (req, res) => {
     await fetchQuotation(type, code);
     res.json({ success: true, type, code });
   } catch (error) {
-    res.status(400).json({ error: `Nie znaleziono funduszu dla kodu ${type}/${code}. Upewnij się, że link prowadzi do poprawnego funduszu.` });
+    res.status(400).json({ error: `Nie znaleziono funduszu ani ETF dla kodu ${type}/${code}. Upewnij się, że link prowadzi do poprawnego funduszu/ETF.` });
   }
 });
 
