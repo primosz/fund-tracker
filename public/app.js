@@ -21,6 +21,50 @@ document.addEventListener('DOMContentLoaded', () => {
     const emptyState = document.getElementById('empty-state');
     const fundsGrid = document.getElementById('funds-grid');
 
+    // Update card header elements dynamically during chart hover (Apple style)
+    function updateCardHeaderHoverState(fundId, value, date) {
+        const idSafe = fundId.replace('/', '-');
+        const priceSection = document.getElementById(`price-section-${idSafe}`);
+        if (!priceSection) return;
+
+        const priceValEl = priceSection.querySelector('.price-val');
+        const priceDateEl = priceSection.querySelector('.price-date');
+        
+        const fund = fundsData.find(f => f.id === fundId);
+        const currency = fund ? fund.currency : 'PLN';
+
+        if (priceValEl) {
+            priceValEl.innerHTML = `${value.toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}<span>${currency}</span>`;
+        }
+        if (priceDateEl) {
+            priceDateEl.textContent = `Wycena z dnia: ${date}`;
+            priceDateEl.style.color = 'var(--apple-blue)';
+            priceDateEl.style.fontWeight = '600';
+        }
+    }
+
+    // Reset card header elements to original latest values
+    function resetCardHeaderHoverState(fundId) {
+        const idSafe = fundId.replace('/', '-');
+        const priceSection = document.getElementById(`price-section-${idSafe}`);
+        if (!priceSection) return;
+
+        const priceValEl = priceSection.querySelector('.price-val');
+        const priceDateEl = priceSection.querySelector('.price-date');
+
+        const fund = fundsData.find(f => f.id === fundId);
+        if (!fund) return;
+
+        if (priceValEl) {
+            priceValEl.innerHTML = `${fund.currentValue.toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}<span>${fund.currency}</span>`;
+        }
+        if (priceDateEl) {
+            priceDateEl.textContent = `Notowanie z dnia: ${fund.lastUpdate}`;
+            priceDateEl.style.color = 'var(--text-secondary)';
+            priceDateEl.style.fontWeight = '400';
+        }
+    }
+
     // Retrieve list of tracked funds from LocalStorage
     function getTrackedList() {
         try {
@@ -440,7 +484,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 height: 160,
                 sparkline: { enabled: true },
                 animations: { enabled: true, easing: 'easeinout', speed: 400 },
-                background: 'transparent'
+                background: 'transparent',
+                events: {
+                    mouseMove: function(event, chartContext, config) {
+                        const dataPointIndex = config.dataPointIndex;
+                        if (dataPointIndex !== -1 && dataPointIndex !== undefined) {
+                            const dateVal = categories[dataPointIndex];
+                            const priceVal = dataValues[dataPointIndex];
+                            updateCardHeaderHoverState(fundId, priceVal, dateVal);
+                        }
+                    },
+                    mouseLeave: function() {
+                        resetCardHeaderHoverState(fundId);
+                    }
+                }
             },
             stroke: {
                 curve: 'smooth',
@@ -456,13 +513,33 @@ document.addEventListener('DOMContentLoaded', () => {
                     stops: [0, 100]
                 }
             },
+            markers: {
+                size: 0,
+                hover: {
+                    size: 5,
+                    sizeOffset: 3,
+                    colors: [themeColor],
+                    strokeColors: '#ffffff',
+                    strokeWidth: 2
+                }
+            },
             series: [{
                 name: 'Cena jednostki',
                 data: dataValues
             }],
             xaxis: {
                 categories: categories,
-                type: 'datetime'
+                type: 'datetime',
+                crosshairs: {
+                    show: true,
+                    width: 1,
+                    position: 'back',
+                    stroke: {
+                        color: themeColor,
+                        width: 1,
+                        dashArray: 3
+                    }
+                }
             },
             yaxis: {
                 labels: {
@@ -472,18 +549,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             },
             tooltip: {
-                theme: 'light',
-                x: { format: 'dd.MM.yyyy' },
-                y: {
-                    formatter: function(val) {
-                        return val.toFixed(2) + ' ' + currency;
-                    }
-                },
-                style: {
-                    fontSize: '11px',
-                    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto'
-                },
-                marker: { show: false }
+                enabled: false // Disable the floating popup completely to avoid overlapping the line
             },
             grid: {
                 padding: { top: 10, right: 10, bottom: 5, left: 10 }
@@ -562,10 +628,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 <div class="fund-title" title="${fund.name}">${fund.name}</div>
                 
-                <div class="card-price-section">
+                <div class="card-price-section" id="price-section-${fund.id.replace('/', '-')}">
                     <div class="price-main">
-                        <h3>${fund.currentValue.toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}<span>${fund.currency}</span></h3>
-                        <p>Notowanie z dnia: ${fund.lastUpdate}</p>
+                        <h3 class="price-val">${fund.currentValue.toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}<span>${fund.currency}</span></h3>
+                        <p class="price-date">Notowanie z dnia: ${fund.lastUpdate}</p>
                     </div>
                     <div class="change-badge ${changeClass}">
                         <i class="fa-solid ${changeIcon}"></i>
